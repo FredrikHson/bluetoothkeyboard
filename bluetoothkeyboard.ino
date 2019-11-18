@@ -1,11 +1,17 @@
 #include <bluefruit.h>
 #include "keyconfig.h"
 
+//#define SDEBUG 1
+
 BLEDis bledis;
 BLEHidAdafruit blehid;
 
 int numpressedatonce = 0;
+int keymode = 0;
 hid_keyboard_report_t report;
+
+void set_keyboard_led(uint16_t conn_handle, uint8_t led_bitmap);
+void startAdv(void);
 
 void setupPins()
 {
@@ -15,10 +21,23 @@ void setupPins()
         //digitalWrite(pins[i], HIGH);
     }
 }
+void setupMode()
+{
+    for(int i = 0; i  < NUMMODES; i ++)
+    {
+        if(digitalRead(pins[i]) == LOW)
+        {
+            keymode = i;
+            return;
+        }
+    }
+}
 
 void setup()
 {
     setupPins();
+    setupMode();
+    #ifdef SDEBUG
     Serial.begin(115200);
 
     while(!Serial)
@@ -26,14 +45,7 @@ void setup()
         delay(10);    // for nrf52840 with native usb
     }
 
-    Serial.println("Bluefruit52 HID Keyboard Example");
-    Serial.println("--------------------------------\n");
-    Serial.println();
-    Serial.println("Go to your phone's Bluetooth settings to pair your device");
-    Serial.println("then open an application that accepts keyboard input");
-    Serial.println();
-    Serial.println("Enter the character(s) to send:");
-    Serial.println();
+    #endif
     Bluefruit.begin();
     Bluefruit.setTxPower(4);    // Check bluefruit.h for supported values
     Bluefruit.setName("Bluefruit52");
@@ -110,6 +122,7 @@ void keyRelease(key& k)
 
 void sendReport()
 {
+    #ifdef SDEBUG
     char buf[256] = {0};
     sprintf(buf, "sending report %i %i %i %i %i %i",
             report.keycode[0],
@@ -119,6 +132,7 @@ void sendReport()
             report.keycode[4],
             report.keycode[5]);
     Serial.println(buf);
+    #endif
     blehid.keyboardReport(&report);
 }
 
@@ -136,23 +150,27 @@ void loop()
 
             for(int j = 0; j  < 4; j ++)
             {
-                key& k = keys[0].keys[i][j];
+                key& k = keys[keymode].keys[i][j];
 
                 if(k.scancode != 0)
                 {
                     if(pressed == true)
                     {
                         keyRelease(k);
+                        #ifdef SDEBUG
                         char buf[32] = {0};
-                        sprintf(buf, "keyrelease %i %i %i",i, (int)k.scancode, pressed);
+                        sprintf(buf, "keyrelease %i %i %i", i, (int)k.scancode, pressed);
                         Serial.println(buf);
+                        #endif
                     }
                     else
                     {
                         keyPress(k);
+                        #ifdef SDEBUG
                         char buf[32] = {0};
-                        sprintf(buf, "keypress %i  %i %i",i, (int)k.scancode, pressed);
+                        sprintf(buf, "keypress %i  %i %i", i, (int)k.scancode, pressed);
                         Serial.println(buf);
+                        #endif
                     }
                 }
             }
@@ -160,6 +178,7 @@ void loop()
             sendReport();
         }
     }
+
     delay(1);
 }
 
