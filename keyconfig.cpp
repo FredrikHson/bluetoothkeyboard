@@ -1,6 +1,6 @@
 #include <tinyusb/src/class/hid/hid.h>
 #include "keyconfig.h"
-*/
+
 // 0 1 2
 // 3 4 5
 // 6 7 8
@@ -16,8 +16,8 @@ int pins[NUMKEYS] =
     7,  // 6
     29, // 7
     2,  // 8
-    11,  // 9
-    12,  // 10
+    11, // 9
+    12, // 10
     13  // 11
 };
 // modifier,  hidkey,  modifier,  hidkey,  modifier,  hidkey,  modifier,  hidkey,

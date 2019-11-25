@@ -1,7 +1,7 @@
 #include <bluefruit.h>
 #include "keyconfig.h"
 
-//#define SDEBUG 1
+/*#define SDEBUG 1*/
 
 BLEDis bledis;
 BLEHidAdafruit blehid;
@@ -18,7 +18,6 @@ void setupPins()
     for(int i = 0; i  < NUMKEYS; i ++)
     {
         pinMode(pins[i], INPUT);
-        //digitalWrite(pins[i], HIGH);
     }
 }
 void setupMode()
@@ -95,6 +94,7 @@ void startAdv(void)
     Bluefruit.Advertising.setInterval(32, 244);    // in unit of 0.625 ms
     Bluefruit.Advertising.setFastTimeout(30);      // number of seconds in fast mode
     Bluefruit.Advertising.start(0);                // 0 = Don't stop advertising after n seconds
+    Bluefruit.autoConnLed(false);
 }
 void keyPress(key& k)
 {
@@ -148,7 +148,7 @@ void loop()
         {
             keystates[i] = pressed;
 
-            for(int j = 0; j  < 4; j ++)
+            for(int j = 0; j  < 4; j++)
             {
                 key& k = keys[keymode].keys[i][j];
 
@@ -179,7 +179,7 @@ void loop()
         }
     }
 
-    delay(1);
+    delay(150);
 }
 
 /**
@@ -192,14 +192,13 @@ void loop()
 void set_keyboard_led(uint16_t conn_handle, uint8_t led_bitmap)
 {
     (void) conn_handle;
-
     // light up Red Led if any bits is set
-    if(led_bitmap)
-    {
-        ledOn(LED_RED);
-    }
-    else
-    {
-        ledOff(LED_RED);
-    }
+    /*if(led_bitmap)*/
+    /*{*/
+    /*ledOn(LED_RED);*/
+    /*}*/
+    /*else*/
+    /*{*/
+    /*ledOff(LED_RED);*/
+    /*}*/
 }
